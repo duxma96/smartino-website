@@ -98,6 +98,8 @@ const STEPS = [
   { n: '04', title: 'Podrška i nadogradnja', text: 'Tu smo i posle — sistem se lako proširuje novim paketima kako vam rastu potrebe.' },
 ]
 
+const PORTAL_URL = 'https://app.smartino.rs'
+
 const NAV_LINKS = [
   { href: '#paketi', label: 'Paketi' },
   { href: '#kako-radimo', label: 'Kako radimo' },
@@ -133,6 +135,9 @@ function Header() {
           {NAV_LINKS.map((l) => (
             <a key={l.href} href={l.href} onClick={() => setOpen(false)}>{l.label}</a>
           ))}
+          <a href={PORTAL_URL} className="btn btn-ghost nav-cta nav-login">
+            Prijava
+          </a>
           <a href="#kontakt" className="btn btn-primary nav-cta" onClick={() => setOpen(false)}>
             Zakažite konsultaciju
           </a>
