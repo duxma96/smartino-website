@@ -67,18 +67,20 @@
 /* muzika */
 .ps-music {
   position: absolute;
-  display: flex; align-items: flex-end; gap: 3px; height: 26px;
-  padding: 6px 9px; border-radius: 12px;
-  background: rgba(7, 35, 82, .82); pointer-events: none;
+  display: flex; align-items: flex-end; gap: 3px; height: 22px; box-sizing: content-box;
+  padding: 4px 10px; border-radius: 999px;
+  background: rgba(7, 35, 82, .88); pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .35);
 }
 .ps-music i {
   width: 4px; border-radius: 2px; background: var(--lime);
   animation: ps-eq .8s ease-in-out infinite alternate;
 }
-.ps-music i:nth-child(1) { height: 8px; }
-.ps-music i:nth-child(2) { height: 18px; animation-delay: .15s; }
-.ps-music i:nth-child(3) { height: 12px; animation-delay: .3s; }
-.ps-music i:nth-child(4) { height: 20px; animation-delay: .45s; }
+.ps-music i { transform-origin: bottom; }
+.ps-music i:nth-child(1) { height: 7px; }
+.ps-music i:nth-child(2) { height: 14px; animation-delay: .15s; }
+.ps-music i:nth-child(3) { height: 10px; animation-delay: .3s; }
+.ps-music i:nth-child(4) { height: 16px; animation-delay: .45s; }
 .ps-music span { align-self: center; margin-left: 4px; font-size: 11px; font-weight: 800; color: #fff; white-space: nowrap; }
 @keyframes ps-eq { to { transform: scaleY(.35); } }
 

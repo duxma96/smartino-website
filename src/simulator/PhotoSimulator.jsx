@@ -17,12 +17,12 @@ const ROOMS = [
   { id: 'spavaca3', name: 'Spavaća 3', rects: [[135, 250, 178, 158]], ambient: 26, glow: 0.2, ac: { target: 21, x: 138, y: 330, angle: 0 } },
   { id: 'kupatilo2', name: 'Kupatilo 2', rects: [[440, 250, 146, 66]], ambient: 25 },
   { id: 'kuhinja', name: 'Kuhinja', rects: [[402, 322, 192, 140]], ambient: 26, music: { x: 490, y: 429 } },
-  { id: 'dnevna', name: 'Dnevna soba', rects: [[228, 420, 157, 190], [150, 420, 78, 58], [150, 584, 78, 26], [385, 420, 17, 42]], ambient: 27, ac: { target: 22, x: 152, y: 545, angle: 0 }, music: { x: 300, y: 432 } },
+  { id: 'dnevna', name: 'Dnevna soba', rects: [[228, 420, 157, 190], [150, 420, 78, 58], [150, 584, 78, 26], [385, 420, 17, 42]], ambient: 27, ac: { target: 22, x: 238, y: 596, angle: -35 }, music: { x: 300, y: 432 }, label: [246, 458] },
   { id: 'trpezarija', name: 'Trpezarija', rects: [[385, 462, 200, 148]], ambient: 26, music: { x: 568, y: 596 } },
   { id: 'ostava', name: 'Ostava', rects: [[600, 250, 100, 70]], ambient: 25 },
   { id: 'vesernica', name: 'Veš mašina', rects: [[598, 322, 124, 134]], ambient: 25 },
   { id: 'terasa', name: 'Terasa', rects: [[588, 458, 138, 180]], ambient: 24 },
-  { id: 'balkon', name: 'Balkon', rects: [[100, 478, 128, 106]], ambient: 24 },
+  { id: 'balkon', name: 'Balkon', rects: [[100, 478, 128, 106]], ambient: 24, glowR: 0.5 },
 ]
 
 // Vrata i otvoreni prolazi: [soba A, soba B, x, y, w, h]. Između soba se prelazi samo kroz ove pravougaonike.
@@ -34,10 +34,10 @@ const GATES = [
   ['spavaca3', 'hodnik', 306, 254, 28, 54],
   ['kupatilo2', 'hodnik', 432, 254, 18, 44],
   ['kupatilo2', 'ostava', 582, 252, 26, 46],
-  ['hodnik', 'kuhinja', 396, 356, 14, 48],
-  ['hodnik', 'dnevna', 328, 410, 58, 18],
-  ['kuhinja', 'dnevna', 398, 420, 14, 38],
-  ['kuhinja', 'trpezarija', 420, 446, 172, 20],
+  ['hodnik', 'kuhinja', 392, 322, 22, 98],
+  ['hodnik', 'dnevna', 322, 404, 80, 30],
+  ['kuhinja', 'dnevna', 390, 410, 30, 56],
+  ['kuhinja', 'trpezarija', 402, 440, 192, 40],
   ['kuhinja', 'vesernica', 588, 364, 16, 44],
   ['dnevna', 'trpezarija', 379, 466, 12, 130],
   ['dnevna', 'balkon', 222, 470, 22, 92],
@@ -279,6 +279,16 @@ export default function PhotoSimulator() {
               <filter id="ps-soft" x="-10%" y="-10%" width="120%" height="120%">
                 <feGaussianBlur stdDeviation="5" />
               </filter>
+              <filter id="ps-edge" filterUnits="userSpaceOnUse" x="0" y="0" width={W} height={H}>
+                <feGaussianBlur stdDeviation="9" />
+              </filter>
+              {ROOMS.map((r) => (
+                <mask id={`ps-mask-${r.id}`} key={'m' + r.id} maskUnits="userSpaceOnUse" x="0" y="0" width={W} height={H}>
+                  <g filter="url(#ps-edge)">
+                    {r.rects.map(([x, y, w, h], i) => <rect key={i} x={x + 4} y={y + 4} width={w - 8} height={h - 8} rx="10" fill="#fff" />)}
+                  </g>
+                </mask>
+              ))}
               {ROOMS.map((r) => (
                 <clipPath id={`ps-clip-${r.id}`} key={r.id}>
                   {r.rects.map(([x, y, w, h], i) => <rect key={i} x={x} y={y} width={w} height={h} />)}
@@ -293,7 +303,7 @@ export default function PhotoSimulator() {
             </defs>
 
             {/* Noćni režim: sve sobe su zatamnjene dok u njima nema nikoga */}
-            <g filter="url(#ps-soft)">
+            <g filter="url(#ps-edge)">
               {ROOMS.map((r) => r.rects.map(([x, y, w, h], i) => (
                 <rect key={r.id + i} x={x} y={y} width={w} height={h} rx="6" className="ps-dim" style={{ opacity: r.id === roomId ? 0 : 0.6 }} />
               )))}
@@ -304,14 +314,14 @@ export default function PhotoSimulator() {
               const c = center(r)
               const [, , w, h] = r.rects[0]
               return (
-                <g key={r.id} clipPath={`url(#ps-clip-${r.id})`}>
-                  <ellipse cx={c.x} cy={c.y} rx={w * 0.85} ry={h * 0.85} fill="url(#ps-warm)" className="ps-glow" style={{ opacity: r.id === roomId ? (r.glow ?? 0.55) : 0 }} />
+                <g key={r.id} mask={`url(#ps-mask-${r.id})`}>
+                  <ellipse cx={c.x} cy={c.y} rx={w * (r.glowR ?? 0.85)} ry={h * (r.glowR ?? 0.85)} fill="url(#ps-warm)" className="ps-glow" style={{ opacity: r.id === roomId ? (r.glow ?? 0.55) : 0 }} />
                 </g>
               )
             })}
 
             {/* Hladan odsjaj: jači što je soba više rashlađena */}
-            <g filter="url(#ps-soft)">
+            <g filter="url(#ps-edge)">
               {room?.ac && coolK > 0 && room.rects.map(([x, y, w, h], i) => (
                 <rect key={i} x={x} y={y} width={w} height={h} rx="6" className="ps-cool" style={{ opacity: 0.1 + coolK * 0.22 }} />
               ))}
@@ -362,7 +372,7 @@ export default function PhotoSimulator() {
 
           {/* Oznake soba */}
           {ROOMS.map((r) => {
-            const [x, y] = r.rects[0]
+            const [x, y] = r.label ?? r.rects[0]
             const active = r.id === roomId
             const t = temps[r.id]
             const isCool = r.ac && active && cooling
@@ -382,7 +392,7 @@ export default function PhotoSimulator() {
 
           {/* Pločica „svira“ pored zvučnika */}
           {musicOn && (
-            <div className="ps-music" style={{ left: pct(room.music.x + 16, W), top: pct(room.music.y - 14, H) }}>
+            <div className="ps-music" style={{ left: pct(room.music.x, W), top: pct(room.music.y + 52, H), transform: 'translateX(-50%)' }}>
               <i /><i /><i /><i />
               <span>{GENRES[genreIdx]}</span>
             </div>
