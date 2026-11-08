@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Smartino — Automatizacija za firme (predlog)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --navy: #072352; --navy-2: #0d3374; --lime: #c8ee47; --lime-d: #a9cf2a;
+    --ink: #0f1c36; --muted: #5b6784; --line: #e3e8f2; --bg: #ffffff; --soft: #f5f8fc;
+    --radius: 18px;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: Manrope, system-ui, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.55; }
+  h1, h2, h3 { font-family: Sora, Manrope, sans-serif; line-height: 1.12; color: var(--navy); }
+  .container { width: min(1120px, 100% - 32px); margin-inline: auto; }
+  section { padding: 84px 0; }
+  .eyebrow { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #5d7a0c; background: #eef8c9; padding: 6px 12px; border-radius: 999px; }
+  h2 { font-size: clamp(28px, 4vw, 42px); margin: 14px 0 12px; }
+  .lead { color: var(--muted); font-size: 18px; max-width: 640px; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; font: 700 15px Manrope; padding: 14px 22px; border-radius: 999px; text-decoration: none; border: 1px solid transparent; cursor: pointer; transition: transform .15s, box-shadow .15s; }
+  .btn:hover { transform: translateY(-1px); }
+  .btn-primary { background: var(--lime); color: var(--navy); box-shadow: 0 6px 18px rgba(169,207,42,.35); }
+  .btn-ghost { background: #fff; color: var(--navy); border-color: var(--line); }
+
+  /* header */
+  header { position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  .head-row { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px; }
+  .brand { display: flex; align-items: center; gap: 10px; font: 800 20px Sora; color: var(--navy); text-decoration: none; }
+  .brand img { width: 34px; height: 34px; border-radius: 50%; }
+  nav { display: flex; align-items: center; gap: 22px; font-weight: 600; font-size: 15px; }
+  nav a { color: var(--ink); text-decoration: none; }
+  nav .btn { padding: 10px 18px; font-size: 14px; }
+  @media (max-width: 900px) { nav a:not(.btn) { display: none; } }
+
+  /* hero */
+  .hero { background: linear-gradient(180deg, #f1f9d6 0%, #fff 70%); padding: 76px 0 64px; }
+  .hero-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 48px; align-items: center; }
+  .hero h1 { font-size: clamp(36px, 5.6vw, 62px); margin: 18px 0; }
+  .hero h1 em { font-style: normal; color: var(--lime-d); }
+  .hero p { color: var(--muted); font-size: 19px; max-width: 560px; }
+  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+  .flow { background: var(--navy); color: #fff; border-radius: 24px; padding: 26px; box-shadow: 0 24px 60px rgba(7,35,82,.28); }
+  .flow h3 { color: #fff; font-size: 15px; letter-spacing: .04em; text-transform: uppercase; opacity: .7; margin-bottom: 14px; font-family: Manrope; }
+  .step { display: flex; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 12px; background: rgba(255,255,255,.07); margin-bottom: 8px; font-size: 14.5px; }
+  .step b { display: grid; place-items: center; min-width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,.14); font-size: 13px; }
+  .step.auto { background: rgba(200,238,71,.16); border: 1px solid rgba(200,238,71,.5); }
+  .step.auto b { background: var(--lime); color: var(--navy); }
+  .step small { display: block; opacity: .65; font-size: 12px; }
+  @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; } }
+
+  /* problem */
+  .pain { background: var(--navy); color: #fff; }
+  .pain h2 { color: #fff; } .pain .lead { color: #b9c6e3; }
+  .pain-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 34px; }
+  .pain-card { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: var(--radius); padding: 20px; }
+  .pain-card strong { display: block; font: 700 17px Sora; margin-bottom: 6px; }
+  .pain-card span { color: #b9c6e3; font-size: 14.5px; }
+  @media (max-width: 900px) { .pain-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 520px) { .pain-grid { grid-template-columns: 1fr; } }
+
+  /* primeri */
+  .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 28px 0 20px; }
+  .tab { font: 700 14px Manrope; padding: 10px 18px; border-radius: 999px; border: 1px solid var(--line); background: #fff; color: var(--ink); cursor: pointer; }
+  .tab.on { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .panel { display: none; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .panel.on { display: grid; }
+  .card { border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; background: #fff; }
+  .card .tag { font-size: 12px; font-weight: 800; color: #5d7a0c; background: #eef8c9; padding: 4px 10px; border-radius: 999px; }
+  .card h3 { font-size: 19px; margin: 12px 0 8px; }
+  .card p { color: var(--muted); font-size: 15px; }
+  .card .arrow { margin-top: 14px; font-size: 14px; font-weight: 700; color: var(--navy); }
+  @media (max-width: 900px) { .panel.on { grid-template-columns: 1fr; } }
+
+  /* kalkulator */
+  .calc-wrap { background: var(--soft); }
+  .calc { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 30px; align-items: stretch; }
+  .calc-box { background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: 28px; }
+  .row { margin-bottom: 20px; }
+  .row label { display: flex; justify-content: space-between; font-weight: 700; font-size: 15px; margin-bottom: 8px; }
+  .row label output { color: var(--navy); }
+  input[type=range] { width: 100%; accent-color: var(--navy); }
+  .result { background: var(--navy); color: #fff; display: flex; flex-direction: column; justify-content: center; }
+  .result .big { font: 800 56px Sora; color: var(--lime); line-height: 1; }
+  .result p { color: #b9c6e3; margin-top: 8px; }
+  .result hr { border: 0; border-top: 1px solid rgba(255,255,255,.15); margin: 22px 0; }
+  .note { font-size: 12.5px; opacity: .65; margin-top: 18px; }
+  @media (max-width: 900px) { .calc { grid-template-columns: 1fr; } }
+
+  /* kako radimo */
+  .how-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 34px; }
+  .how-card { border-top: 4px solid var(--lime); background: var(--soft); border-radius: 0 0 var(--radius) var(--radius); padding: 20px; }
+  .how-card b { font: 800 14px Sora; color: var(--lime-d); }
+  .how-card h3 { font-size: 18px; margin: 6px 0; }
+  .how-card p { color: var(--muted); font-size: 14.5px; }
+  @media (max-width: 900px) { .how-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 520px) { .how-grid { grid-template-columns: 1fr; } }
+
+  /* platforma */
+  .plat { background: linear-gradient(180deg, #fff, #f1f9d6); }
+  .mod-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 30px; }
+  .mod { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 16px; font-size: 14.5px; }
+  .mod b { display: block; font: 700 15px Sora; color: var(--navy); margin-bottom: 4px; }
+  .mod span { color: var(--muted); }
+  @media (max-width: 900px) { .mod-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 520px) { .mod-grid { grid-template-columns: 1fr; } }
+
+  /* pametni dom — zadržano */
+  .home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+  .home-grid img { width: 100%; border-radius: 24px; background: #101a33; box-shadow: 0 20px 50px rgba(7,35,82,.2); }
+  .pkgs { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 24px; }
+  .pkgs span { font-weight: 700; font-size: 14px; padding: 8px 14px; border-radius: 999px; background: var(--soft); border: 1px solid var(--line); }
+  @media (max-width: 900px) { .home-grid { grid-template-columns: 1fr; } }
+
+  /* kontakt */
+  .contact { background: var(--navy); color: #fff; text-align: center; }
+  .contact h2 { color: #fff; } .contact .lead { color: #b9c6e3; margin-inline: auto; }
+  .contact .cta-row { justify-content: center; }
+  footer { padding: 28px 0; font-size: 14px; color: var(--muted); text-align: center; }
+  .banner { background: #fff7d6; color: #6b5300; font-size: 13px; text-align: center; padding: 8px 16px; border-bottom: 1px solid #f0e2a3; }
+</style>
+</head>
+<body>
+<div class="banner">Predlog stranice (statički primer) — postojeći sajt ostaje isti dok ne odlučimo.</div>
+
+<header>
+  <div class="container head-row">
+    <a class="brand" href="#top"><img src="../src/assets/logo.png" alt="" />Smartino</a>
+    <nav>
+      <a href="#primeri">Šta automatizujemo</a>
+      <a href="#kalkulator">Računica</a>
+      <a href="#kako-radimo">Kako radimo</a>
+      <a href="#platforma">Platforma</a>
+      <a href="#pametni-dom">Pametni dom</a>
+      <a href="#kontakt">Kontakt</a>
+      <a class="btn btn-ghost" href="https://app.smartino.rs">Prijava</a>
+      <a class="btn btn-primary" href="#kontakt">Zakažite razgovor</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <span class="eyebrow">Automatizacija za firme i domove</span>
+        <h1>Posao koji radite svaki dan — <em>neka se radi sam.</em></h1>
+        <p>Ponude, podsetnici, evidencije, prepisivanje iz jednog fajla u drugi. Pogledamo kako vaša firma zaista radi i ubrzamo sve što se stalno ponavlja. Isti princip koji koristimo da pametne domove učinimo jednostavnim.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#kontakt">Besplatan razgovor →</a>
+          <a class="btn btn-ghost" href="#primeri">Pogledajte primere</a>
+        </div>
+      </div>
+      <div class="flow" aria-label="Primer toka: upit do ponude">
+        <h3>Primer: od upita do ponude</h3>
+        <div class="step"><b>1</b><div>Klijent popuni upit na sajtu<small>do sada: poruka na Viberu</small></div></div>
+        <div class="step auto"><b>✓</b><div>Upit sam ulazi u listu kontakata<small>automatski</small></div></div>
+        <div class="step auto"><b>✓</b><div>Pravi se nacrt ponude iz cenovnika<small>automatski</small></div></div>
+        <div class="step"><b>2</b><div>Vi pregledate i odobrite<small>jedan klik</small></div></div>
+        <div class="step auto"><b>✓</b><div>PDF stiže klijentu, podsetnik za javljanje za 3 dana<small>automatski</small></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM -->
+  <section class="pain">
+    <div class="container">
+      <span class="eyebrow">Poznato?</span>
+      <h2>Koliko vremena odlazi na isto, iznova</h2>
+      <p class="lead">U većini malih firmi ista četiri problema pojedu najviše sati. Dobra vest: baš to je najlakše automatizovati.</p>
+      <div class="pain-grid">
+        <div class="pain-card"><strong>Ručno prepisivanje</strong><span>Isti podaci iz mejla u Excel, iz Excela u ponudu, iz ponude u račun.</span></div>
+        <div class="pain-card"><strong>Zaboravljeni rokovi</strong><span>Garancije, javljanje klijentima, ponude koje niko nije pratio.</span></div>
+        <div class="pain-card"><strong>Poruke svuda</strong><span>Viber, mejl, papirići. Niko ne zna šta je tačno dogovoreno.</span></div>
+        <div class="pain-card"><strong>Nema pregleda</strong><span>Koliko smo sati potrošili, šta je naplaćeno, gde smo stali.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRIMERI -->
+  <section id="primeri">
+    <div class="container">
+      <span class="eyebrow">Šta automatizujemo</span>
+      <h2>Primeri po vrsti posla</h2>
+      <p class="lead">Ovo nisu gotovi paketi, nego pravac. Svaku firmu prvo saslušamo, pa složimo samo ono što joj treba.</p>
+
+      <div class="tabs" role="tablist">
+        <button class="tab on" data-t="servis">Servisi i izvođači</button>
+        <button class="tab" data-t="kancelarija">Kancelarija i administracija</button>
+        <button class="tab" data-t="prodaja">Prodaja i trgovina</button>
+      </div>
+
+      <div class="panel on" id="servis">
+        <div class="card"><span class="tag">Ponude</span><h3>Ponuda za 5 minuta</h3><p>Stavke iz vašeg cenovnika, popust, PDF u vašem izgledu. Klijent ništa ne vidi dok vi ne odobrite.</p><div class="arrow">Ušteda: sati nedeljno</div></div>
+        <div class="card"><span class="tag">Teren</span><h3>Plan ekipe i zadaci</h3><p>Ko je gde ove nedelje, fotografije sa terena i sati uz svaki posao, sve sa telefona.</p><div class="arrow">Ušteda: manje poziva i pitanja</div></div>
+        <div class="card"><span class="tag">Posle prodaje</span><h3>Garancije i servis</h3><p>Sistem sam pamti kad garancija ističe i podseti vas i klijenta na vreme.</p><div class="arrow">Ušteda: nijedan propušten rok</div></div>
+      </div>
+      <div class="panel" id="kancelarija">
+        <div class="card"><span class="tag">Dokumenta</span><h3>Dokumenta se sama popunjavaju</h3><p>Ugovori, zapisnici i potvrde iz jednog šablona, sa podacima koji već postoje u sistemu.</p><div class="arrow">Ušteda: nema prepisivanja</div></div>
+        <div class="card"><span class="tag">Evidencije</span><h3>Iz tabele u aplikaciju</h3><p>Excel koji niko ne sme da dira postaje jednostavna aplikacija sa ulogama: ko šta sme da vidi.</p><div class="arrow">Ušteda: manje grešaka</div></div>
+        <div class="card"><span class="tag">Podsetnici</span><h3>Obaveštenja koja stižu sama</h3><p>Rokovi, uplate, isteci ugovora: poruka stiže pravoj osobi, a ne ostaje u nečijoj glavi.</p><div class="arrow">Ušteda: mir u glavi</div></div>
+      </div>
+      <div class="panel" id="prodaja">
+        <div class="card"><span class="tag">Upiti</span><h3>Svaki upit ima svoje mesto</h3><p>Sa sajta, mejla ili telefona upit upada u jednu tablu sa fazama. Vidi se ko ga vodi i šta je sledeće.</p><div class="arrow">Ušteda: nijedan izgubljen upit</div></div>
+        <div class="card"><span class="tag">Narudžbine</span><h3>Nabavka po porudžbini</h3><p>Lista za poručivanje po dobavljaču se pravi iz prihvaćene ponude, uz status poručeno / stiglo.</p><div class="arrow">Ušteda: manje ručnog spiska</div></div>
+        <div class="card"><span class="tag">Izveštaji</span><h3>Pregled bez računanja</h3><p>Šta je prodato, šta je naplaćeno i šta čeka, na jednoj stranici umesto u tri fajla.</p><div class="arrow">Ušteda: odluke na osnovu brojki</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- KALKULATOR -->
+  <section class="calc-wrap" id="kalkulator">
+    <div class="container">
+      <span class="eyebrow">Okvirna računica</span>
+      <h2>Koliko bi vam se vratilo sati?</h2>
+      <p class="lead">Pomerite klizače. Ovo je grubo, samo da vidite red veličine. Prave brojke dobijamo kad pogledamo vaš posao.</p>
+      <div class="calc">
+        <div class="calc-box">
+          <div class="row"><label for="ppl">Ljudi koji rade administraciju <output id="o-ppl">3</output></label><input id="ppl" type="range" min="1" max="20" value="3" /></div>
+          <div class="row"><label for="hrs">Sati dnevno na ponavljajuće poslove (po osobi) <output id="o-hrs">2</output></label><input id="hrs" type="range" min="0.5" max="6" step="0.5" value="2" /></div>
+          <div class="row"><label for="pct">Koliko od toga može da se automatizuje <output id="o-pct">40%</output></label><input id="pct" type="range" min="10" max="80" step="5" value="40" /></div>
+        </div>
+        <div class="calc-box result">
+          <div class="big" id="r-month">0 h</div>
+          <p>sati mesečno koji se vraćaju timu</p>
+          <hr />
+          <div class="big" style="font-size:34px" id="r-year">0 radnih dana</div>
+          <p>godišnje, za posao koji donosi novac</p>
+          <div class="note">Računica pretpostavlja 21 radni dan mesečno. To je ilustracija, ne obećanje.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- KAKO RADIMO -->
+  <section id="kako-radimo">
+    <div class="container">
+      <span class="eyebrow">Kako radimo</span>
+      <h2>Od razgovora do rezultata, u malim koracima</h2>
+      <div class="how-grid">
+        <div class="how-card"><b>01</b><h3>Saslušamo</h3><p>Pitamo kako radite i gde se vreme gubi. Bez obaveze, bez tehničkih izraza.</p></div>
+        <div class="how-card"><b>02</b><h3>Predložimo</h3><p>Jasno: šta automatizujemo prvo, šta kasnije i koliko to košta.</p></div>
+        <div class="how-card"><b>03</b><h3>Napravimo i probamo</h3><p>Prvo jedan mali posao, da vidite razliku. Tek onda sledeći.</p></div>
+        <div class="how-card"><b>04</b><h3>Ostanemo uz vas</h3><p>Podrška, izmene i novi poslovi kad firma raste.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLATFORMA -->
+  <section class="plat" id="platforma">
+    <div class="container">
+      <span class="eyebrow">Smartino platforma</span>
+      <h2>Alat koji koristimo i mi, i vi možete</h2>
+      <p class="lead">Aplikacija koju smo napravili za sopstvenu firmu: od ponude do garancije na jednom mestu. Uključujete samo module koji vam trebaju.</p>
+      <div class="mod-grid">
+        <div class="mod"><b>Kontakti</b><span>Kupci, firme, saradnici, istorija.</span></div>
+        <div class="mod"><b>Ponude</b><span>Cenovnik, PDF, verzije, deljenje.</span></div>
+        <div class="mod"><b>Prodaja</b><span>Tabla sa fazama i podsetnici.</span></div>
+        <div class="mod"><b>Projekti</b><span>Zadaci, sati, fotografije, dokumenta.</span></div>
+        <div class="mod"><b>Kalendar i tim</b><span>Planer ekipe, odmori, statistika.</span></div>
+        <div class="mod"><b>Servis i garancija</b><span>Zahtevi, termini, istek garancije.</span></div>
+        <div class="mod"><b>Razgovori</b><span>Chat i brza glasanja u timu.</span></div>
+        <div class="mod"><b>Uloge</b><span>Svako vidi samo ono što sme.</span></div>
+      </div>
+      <div class="cta-row"><a class="btn btn-ghost" href="https://app.smartino.rs">Prijava u aplikaciju</a></div>
+    </div>
+  </section>
+
+  <!-- PAMETNI DOM (zadržano) -->
+  <section id="pametni-dom">
+    <div class="container home-grid">
+      <div>
+        <span class="eyebrow">Pametni dom</span>
+        <h2>Automatizacija počinje kod kuće</h2>
+        <p class="lead">Isto razmišljanje primenjujemo na stanove i kuće: svetlo, klima, bezbednost i ulaz rade sami, a vi upravljate sa telefona.</p>
+        <div class="pkgs"><span>Lite</span><span>Safe</span><span>Security 1</span><span>Security 2</span><span>Klima</span><span>Access</span></div>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="/#paketi">Svih 6 paketa</a>
+          <a class="btn btn-ghost" href="/#simulator">Isprobajte simulator uživo</a>
+        </div>
+      </div>
+      <img src="../src/assets/apartment-top.png" alt="Pametni stan, pogled odozgo" />
+    </div>
+  </section>
+
+  <!-- KONTAKT -->
+  <section class="contact" id="kontakt">
+    <div class="container">
+      <span class="eyebrow">Kontakt</span>
+      <h2>Ispričajte nam šta vas najviše zamara</h2>
+      <p class="lead">Dovoljno je da opišete jedan posao koji radite stalno. Javimo se sa predlogom šta se tu može ubrzati.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="mailto:office@smartino.rs?subject=Automatizacija%20posla">office@smartino.rs</a>
+      </div>
+    </div>
+  </section>
+</main>
+<footer><div class="container">© Smartino · smartino.rs</div></footer>
+
+<script>
+  // tabovi
+  document.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach((x) => x.classList.toggle('on', x === b))
+    document.querySelectorAll('.panel').forEach((p) => p.classList.toggle('on', p.id === b.dataset.t))
+  }))
+  // kalkulator
+  const $ = (id) => document.getElementById(id)
+  function calc() {
+    const ppl = +$('ppl').value, hrs = +$('hrs').value, pct = +$('pct').value
+    $('o-ppl').textContent = ppl; $('o-hrs').textContent = hrs; $('o-pct').textContent = pct + '%'
+    const month = Math.round(ppl * hrs * 21 * (pct / 100))
+    $('r-month').textContent = month + ' h'
+    $('r-year').textContent = Math.round((month * 12) / 8) + ' radnih dana'
+  }
+  ;['ppl', 'hrs', 'pct'].forEach((id) => $(id).addEventListener('input', calc))
+  calc()
+</script>
+</body>
+</html>

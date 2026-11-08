@@ -51,6 +51,15 @@ const BY_ID = Object.fromEntries(ROOMS.map((r) => [r.id, r]))
 const inRect = (p, [x, y, w, h], pad = 0) => p.x >= x - pad && p.x <= x + w + pad && p.y >= y - pad && p.y <= y + h + pad
 const hit = (p) => ROOMS.find((r) => r.rects.some((rc) => inRect(p, rc))) ?? null
 const center = (r) => { const [x, y, w, h] = r.rects[0]; return { x: x + w / 2, y: y + h / 2 } }
+// Okvir sobe (sa marginom za blur): filteri se računaju samo na tom delu slike, ne na celoj.
+const PAD = 32
+const bbox = (r) => {
+  const x0 = Math.min(...r.rects.map((q) => q[0])) - PAD
+  const y0 = Math.min(...r.rects.map((q) => q[1])) - PAD
+  const x1 = Math.max(...r.rects.map((q) => q[0] + q[2])) + PAD
+  const y1 = Math.max(...r.rects.map((q) => q[1] + q[3])) + PAD
+  return { x: x0, y: y0, width: x1 - x0, height: y1 - y0 }
+}
 const round1 = (n) => Math.round(n * 10) / 10
 const clamp01 = (n) => Math.min(1, Math.max(0, n))
 const pct = (v, total) => `${(v / total) * 100}%`
@@ -279,12 +288,14 @@ export default function PhotoSimulator() {
               <filter id="ps-soft" x="-10%" y="-10%" width="120%" height="120%">
                 <feGaussianBlur stdDeviation="5" />
               </filter>
-              <filter id="ps-edge" filterUnits="userSpaceOnUse" x="0" y="0" width={W} height={H}>
-                <feGaussianBlur stdDeviation="9" />
-              </filter>
               {ROOMS.map((r) => (
-                <mask id={`ps-mask-${r.id}`} key={'m' + r.id} maskUnits="userSpaceOnUse" x="0" y="0" width={W} height={H}>
-                  <g filter="url(#ps-edge)">
+                <filter id={`ps-edge-${r.id}`} key={'f' + r.id} filterUnits="userSpaceOnUse" {...bbox(r)}>
+                  <feGaussianBlur stdDeviation="9" />
+                </filter>
+              ))}
+              {ROOMS.map((r) => (
+                <mask id={`ps-mask-${r.id}`} key={'m' + r.id} maskUnits="userSpaceOnUse" {...bbox(r)}>
+                  <g filter={`url(#ps-edge-${r.id})`}>
                     {r.rects.map(([x, y, w, h], i) => <rect key={i} x={x + 4} y={y + 4} width={w - 8} height={h - 8} rx="10" fill="#fff" />)}
                   </g>
                 </mask>
@@ -303,11 +314,13 @@ export default function PhotoSimulator() {
             </defs>
 
             {/* Noćni režim: sve sobe su zatamnjene dok u njima nema nikoga */}
-            <g filter="url(#ps-edge)">
-              {ROOMS.map((r) => r.rects.map(([x, y, w, h], i) => (
-                <rect key={r.id + i} x={x} y={y} width={w} height={h} rx="6" className="ps-dim" style={{ opacity: r.id === roomId ? 0 : 0.6 }} />
-              )))}
-            </g>
+            {ROOMS.map((r) => (
+              <g key={r.id} filter={`url(#ps-edge-${r.id})`} className="ps-dim" style={{ opacity: r.id === roomId ? 0 : 0.6 }}>
+                {r.rects.map(([x, y, w, h], i) => (
+                  <rect key={i} x={x} y={y} width={w} height={h} rx="6" />
+                ))}
+              </g>
+            ))}
 
             {/* Toplo svetlo sa plafona */}
             {ROOMS.map((r) => {
@@ -321,11 +334,13 @@ export default function PhotoSimulator() {
             })}
 
             {/* Hladan odsjaj: jači što je soba više rashlađena */}
-            <g filter="url(#ps-edge)">
-              {room?.ac && coolK > 0 && room.rects.map(([x, y, w, h], i) => (
-                <rect key={i} x={x} y={y} width={w} height={h} rx="6" className="ps-cool" style={{ opacity: 0.1 + coolK * 0.22 }} />
-              ))}
-            </g>
+            {room?.ac && coolK > 0 && (
+              <g filter={`url(#ps-edge-${room.id})`} className="ps-cool" style={{ opacity: 0.1 + coolK * 0.22 }}>
+                {room.rects.map(([x, y, w, h], i) => (
+                  <rect key={i} x={x} y={y} width={w} height={h} rx="6" />
+                ))}
+              </g>
+            )}
 
             {/* Klima: uređaj, konus vazduha i strujanje dok hladi */}
             {ROOMS.filter((r) => r.ac).map((r) => {
