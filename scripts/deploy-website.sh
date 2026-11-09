@@ -63,7 +63,7 @@ fi
 TMP=$(mktemp -d /tmp/smartino-web.XXXXXX)
 trap 'rm -rf "$TMP"' EXIT
 echo "Preuzimam $REF ..."
-git clone -q --depth 1 --branch "$REF" "$REPO" "$TMP/src" 2>&1 | grep -v 'detached HEAD' || true
+git -c advice.detachedHead=false clone -q --depth 1 --branch "$REF" "$REPO" "$TMP/src"
 [ -f "$TMP/src/package.json" ] || { echo "Nije uspelo preuzimanje $REF" >&2; exit 1; }
 echo "Verzija: $(git -C "$TMP/src" log -1 --format='%h %s')"
 
