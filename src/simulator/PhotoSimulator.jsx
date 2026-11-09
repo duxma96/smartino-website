@@ -122,10 +122,25 @@ export default function PhotoSimulator() {
   const [genreIdx, setGenreIdx] = useState(1)
   const [acEnabled, setAcEnabled] = useState(true)
   const [temps, setTemps] = useState(() => Object.fromEntries(ROOMS.map((r) => [r.id, r.ambient])))
-  const [log, setLog] = useState([{ t: 0, text: 'Sistem spreman — pomerite miš u stan' }])
+  const isTouch = useRef(typeof window !== 'undefined' && !!window.matchMedia?.('(pointer: coarse)').matches)
+  const [log, setLog] = useState([{ t: 0, text: isTouch.current ? 'Sistem spreman — obilazak stana počinje' : 'Sistem spreman — pomerite miš u stan' }])
 
   const room = roomId ? BY_ID[roomId] : null
   playingRef.current = playing
+
+  // Telefon: kretanje prstom kroz stan nije praktično, pa se obilazak sam vrti dok je sekcija vidljiva.
+  // Dodir na sobu (ili „Zaustavi“) ga pauzira, a sledeći klik na dugme ga ponovo pokreće.
+  const stoppedByUser = useRef(false)
+  useEffect(() => {
+    if (!isTouch.current) return
+    const el = document.getElementById('simulator')
+    if (!el || !('IntersectionObserver' in window)) return
+    const io = new IntersectionObserver(([en]) => {
+      setPlaying(en.isIntersecting && !stoppedByUser.current)
+    }, { threshold: 0.35 })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
   const roomRef = useRef(null)
   roomRef.current = roomId
   const acRef = useRef(true)
@@ -235,6 +250,7 @@ export default function PhotoSimulator() {
   }
 
   const onMove = (e) => {
+    if (e.pointerType === 'touch') return // prst koji skroluje ne sme da prekine obilazak
     if (playingRef.current) {
       setPlaying(false)
       curRef.current = null // preuzimanje: tačka ide tamo gde je miš
@@ -257,6 +273,7 @@ export default function PhotoSimulator() {
   }
 
   const teleport = (id) => {
+    stoppedByUser.current = true
     setPlaying(false)
     curRef.current = id
     setRoomId(id)
@@ -271,7 +288,9 @@ export default function PhotoSimulator() {
       <div className="ps-head">
         <span className="ps-eyebrow">Uživo</span>
         <h2>Vidite automatizaciju u akciji</h2>
-        <p>Pomerajte miš kroz stan — kao u pravom stanu, kroz zidove se ne prolazi, samo kroz vrata. Svetlo se pali čim uđete, klima hladi do zadate temperature, a muzika vas prati iz sobe u sobu.</p>
+        <p>{isTouch.current
+          ? 'Stan se obilazi sam, soba po soba. Dodirnite neku sobu ispod mape da stanete u nju. Svetlo se pali čim uđete, klima hladi do zadate temperature, a muzika vas prati iz sobe u sobu.'
+          : 'Pomerajte miš kroz stan — kao u pravom stanu, kroz zidove se ne prolazi, samo kroz vrata. Svetlo se pali čim uđete, klima hladi do zadate temperature, a muzika vas prati iz sobe u sobu.'}</p>
       </div>
 
       <div className="ps-grid">
@@ -442,7 +461,7 @@ export default function PhotoSimulator() {
           </div>
 
           <div className="ps-controls">
-            <button className="ps-play" onClick={() => { setStep(0); setPlaying((p) => !p) }}>
+            <button className="ps-play" onClick={() => { stoppedByUser.current = playing; setStep(0); setPlaying((p) => !p) }}>
               {playing ? <IconPause width={14} height={14} /> : <IconPlay width={14} height={14} />}
               {playing ? 'Zaustavi obilazak' : 'Pokreni automatski obilazak'}
             </button>

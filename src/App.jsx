@@ -144,7 +144,14 @@ const MODULES = [
   { title: 'Uloge', text: 'Svako vidi samo ono što sme.' },
 ]
 
-const PORTAL_URL = 'https://app.smartino.rs'
+// Aplikacija je uvek na poddomenu app. adrese na kojoj je sajt otvoren, pa se pri promeni domena ovde ništa ne menja.
+function getPortalUrl() {
+  const host = window.location.hostname.replace(/^www\./, '')
+  const isLocal = host === 'localhost' || /^[\d.]+$/.test(host)
+  return isLocal ? 'https://app.smartino.rs' : `${window.location.protocol}//app.${host}`
+}
+
+const PORTAL_URL = getPortalUrl()
 
 const NAV_LINKS = [
   { href: '#primeri', label: 'Automatizacija' },
@@ -153,6 +160,16 @@ const NAV_LINKS = [
   { href: '#pametni-dom', label: 'Pametni dom' },
   { href: '#simulator', label: 'Uživo' },
   { href: '#kontakt', label: 'Kontakt' },
+]
+
+const FAQ = [
+  { q: 'Šta je Smartino platforma?', a: 'To je aplikacija u kojoj vodimo Vaš posao od prvog upita do garancije: ponudu, termine, radove, fotografije i servis. Vi preko svog naloga vidite samo ono što se tiče Vašeg projekta.' },
+  { q: 'Kako da dobijem pristup svom projektu?', a: 'Pošaljemo Vam pozivnicu i dodamo Vas na projekat. Nalog ne morate sami da pravite, a pristup traje dok traje garancija i još mesec dana posle nje.' },
+  { q: 'Šta vidim kad se prijavim?', a: 'Vidite svoje projekte i dokle se stiglo, ponude koje smo Vam podelili, zakazane termine, servisne zahteve i uputstva za Vaš sistem.' },
+  { q: 'Da li mogu da pogledam ponudu bez naloga?', a: 'Možete. Ponudu Vam šaljemo kao poseban link koji se otvara bez prijave, pa je možete pogledati i sa telefona.' },
+  { q: 'Da li aplikacija radi na telefonu?', a: 'Radi. Otvara se u pregledaču, a možete je dodati i na početni ekran telefona, pa se otvara kao obična aplikacija.' },
+  { q: 'Kako da prijavim kvar ili problem?', a: 'Javite nam se telefonom ili mejlom, ili nam pišite u razgovoru sa nama u aplikaciji. Zahtev upisujemo u servis, a Vi na svom nalogu vidite otvorene zahteve i termin dolaska.' },
+  { q: 'Da li su moji podaci bezbedni?', a: 'Podaci se svakodnevno kopiraju, a prijava je moguća samo uz pozivnicu. Svaki kupac vidi isključivo svoje projekte i ponude.' },
 ]
 
 function useScrolled(threshold = 12) {
@@ -516,6 +533,27 @@ function HowWeWork() {
   )
 }
 
+function Faq() {
+  return (
+    <section id="pitanja" className="faq">
+      <div className="container">
+        <div className="section-head">
+          <span className="eyebrow">Česta pitanja</span>
+          <h2>Šta treba da znate o našoj platformi</h2>
+        </div>
+        <div className="faq-list">
+          {FAQ.map((f) => (
+            <details className="faq-item" key={f.q}>
+              <summary>{f.q}</summary>
+              <p>{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function Work() {
   const photos = [install1, install2, install3]
   return (
@@ -648,6 +686,7 @@ export default function App() {
         <Packages />
         <Simulator />
         <Work />
+        <Faq />
         <CtaBanner />
         <Contact />
       </main>
