@@ -317,23 +317,14 @@ body {
   overflow-x: clip;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1240px) {
   .main-nav {
-    gap: 18px;
+    gap: 20px;
   }
 }
 
-@media (max-width: 900px) {
-  .main-nav {
-    gap: 14px;
-  }
-
-  .main-nav a {
-    font-size: 14px;
-  }
-}
-
-@media (max-width: 720px) {
+/* Linkovi + dva dugmeta ne staju u jedan red ispod ~1140px, pa odatle prelazimo na hamburger meni */
+@media (max-width: 1140px) {
   /* backdrop-filter na zaglavlju pravi "containing block" za fixed meni, pa je meni bio visok samo koliko i zaglavlje */
   .site-header,
   .site-header.is-scrolled {
@@ -343,13 +334,22 @@ body {
   }
 
   .main-nav {
+    position: fixed;
+    inset: 78px 0 0 0;
     z-index: 60;
+    background: #fff;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 28px 24px;
+    gap: 22px;
     overflow-y: auto;
+    transform: translateX(100%);
     visibility: hidden;
     transition: transform 0.25s ease, visibility 0s linear 0.25s;
   }
 
   .main-nav.is-open {
+    transform: translateX(0);
     visibility: visible;
     transition: transform 0.25s ease, visibility 0s;
   }
@@ -358,6 +358,33 @@ body {
     font-size: 18px;
   }
 
+  .nav-login {
+    margin-left: 0;
+  }
+
+  .nav-cta {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .nav-toggle {
+    display: flex;
+  }
+
+  .nav-toggle.is-open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .nav-toggle.is-open span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .nav-toggle.is-open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+}
+
+@media (max-width: 720px) {
   .hero-actions .btn {
     width: 100%;
     justify-content: center;
