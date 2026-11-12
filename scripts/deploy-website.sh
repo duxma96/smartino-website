@@ -12,7 +12,7 @@
 set -euo pipefail
 
 SERVER="${DEPLOY_SERVER:-krnjaicd@92.242.189.41}"
-URL="${DEPLOY_URL:-https://92-242-189-41.sslip.io/}"
+URL="${DEPLOY_URL:-https://smartino.rs/}"
 REPO="${DEPLOY_REPO:-https://github.com/duxma96/smartino-website.git}"
 REF="${1:-main}"
 
